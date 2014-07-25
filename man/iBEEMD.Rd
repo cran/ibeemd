@@ -75,6 +75,7 @@ rslt <- iBEEMD(
 		fmodel = "thinplate",
 		fig = TRUE)
 }
+#spplot(rslt)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

@@ -11,12 +11,10 @@ LocalExtremes <- function(spXXDf, nbList, boundary, bPlateauAndBeam=TRUE)
 # boundary: indicate whether an object in spXXDf is located at boundary [vector]
 # bPlateauAndBeam: whether plateau/pan and beam/channel should be treated as extremes
 
-	if(!bPlateauAndBeam)
-	{
+	if(!bPlateauAndBeam) {
 		locMax <- c()
 		locMin <- c()
-		for(i in 1:nrow(spXXDf))
-		{
+		for(i in 1:nrow(spXXDf)) {
 			if(boundary[i]) next
 			
 			curValue <- as.vector(spXXDf@data$value[i])
@@ -25,12 +23,10 @@ LocalExtremes <- function(spXXDf, nbList, boundary, bPlateauAndBeam=TRUE)
 			if(all(curValue < nbValue)) locMin <- c(locMin, i)
 		}
 	}
-	else
-	{
+	else {
 		nDiffWithMin <- rep(NA, nrow(spXXDf))
 		nDiffWithMax <- rep(NA, nrow(spXXDf))
-		for(i in 1:nrow(spXXDf))
-		{
+		for(i in 1:nrow(spXXDf)) {
 			if(boundary[i]) next
 			curV <- as.vector(spXXDf@data$value[i])
 			minV <- min(c(curV,as.vector(spXXDf@data$value[nbList[[i]]])))
@@ -45,8 +41,7 @@ LocalExtremes <- function(spXXDf, nbList, boundary, bPlateauAndBeam=TRUE)
 	return(list(locMax=locMax, locMin=locMin))
 }
 
-PlotFit <- function(xy, fitrslt, nx=64, ny=64)
-{
+PlotFit <- function(xy, fitrslt, nx=64, ny=64) {
 	par(mfrow=c(2,2))
 	quilt.plot(xy, fitrslt$upperEnv, main="Upper envelope", nx=nx, ny=ny)
 	quilt.plot(xy, fitrslt$lowerEnv, main="Lower envelope", nx=nx, ny=ny)
@@ -58,8 +53,7 @@ PlotFit <- function(xy, fitrslt, nx=64, ny=64)
 SurfaceFit <- function(spPointsDf, locExtr, fmodel="thinplate", fig=FALSE, nx=64, ny=64)
 {
 	# scale coordinates to an appropriate range
-	ScaleCoord <- function(xy, nmax=100)
-	{		
+	ScaleCoord <- function(xy, nmax=100) {		
 		return(xy / max(abs(xy)) * nmax)
 	}
 	
@@ -67,16 +61,14 @@ SurfaceFit <- function(spPointsDf, locExtr, fmodel="thinplate", fig=FALSE, nx=64
 	LocalFit <- function()
 	{
 		if(fmodel == "cubic" || fmodel == "multiquadric" 
-				|| fmodel == "gaussian" || fmodel == "thinplate")
-		{
+				|| fmodel == "gaussian" || fmodel == "thinplate") {
 			xy <- ScaleCoord(spPointsDf@coords)
 			fitMax <- rbfcreate(xy[locExtr$locMax,], spPointsDf@data$value[locExtr$locMax], rbffun=fmodel)
 			fitMin <- rbfcreate(xy[locExtr$locMin,], spPointsDf@data$value[locExtr$locMin], rbffun=fmodel)
 			upperEnv <- as.vector(rbfinterp(fitMax, xy))
 			lowerEnv <- as.vector(rbfinterp(fitMin, xy))
 		}
-		else
-		{
+		else {
 			stop("invalid surface fitting method.")
 		}
 		
@@ -87,20 +79,17 @@ SurfaceFit <- function(spPointsDf, locExtr, fmodel="thinplate", fig=FALSE, nx=64
 					upperEnv=upperEnv, lowerEnv=lowerEnv, 
 					meanSurf=meanSurf, residual=residual)
 		
-		if(fig)
-		{
+		if(fig) {
 			PlotFit(spPointsDf@coords, fitrslt, nx=nx, ny=ny)
 		}
 		return(fitrslt)
 	}
 	
-	tryCatch(
-	{
+	tryCatch({
 		fitrslt <- LocalFit()
 		return(fitrslt)
 	},
-	error=function(x) 
-	{
+	error=function(x) {
 		print(x) 
 		return(NULL)
 	}
@@ -122,8 +111,7 @@ ExtractIMFi2D <- function(spPointsDf, nbList, boundary, tolSift=0.05, minExtrema
 	orgValue <- spPointsDf@data$value
 	residual <- orgValue
 	imf <- c()
-	while(1)
-	{
+	while(1) {
 		spPointsDf@data$value <- residual
 		locExtr <- LocalExtremes(spPointsDf, nbList, boundary, bPlateauAndBeam)
 		if(length(locExtr$locMax) < minExtrema || length(locExtr$locMin) < minExtrema) break
@@ -143,8 +131,7 @@ ExtractIMFi2D <- function(spPointsDf, nbList, boundary, tolSift=0.05, minExtrema
 	else
 		residual <- orgValue-imf
 	
-	if(fig)
-	{
+	if(fig) {
 		xy <- spPointsDf@coords
 		par(mfrow=c(1,2))
 		quilt.plot(xy, imf, main="IMF")
@@ -159,22 +146,19 @@ MeanIMF <- function(imfs)
 	if(length(imfs) == 1) return(imfs[[1]])
 	
 	nimf <- rep(0, length(imfs))
-	for(i in 1:length(imfs))
-	{
+	for(i in 1:length(imfs)) {
 		nimf[i] <- NCOL(imfs[[i]]$imf)
 	}
 	
 	uniqLen <- sort(unique(nimf))
 	uniqLenNum <- c()
-	for(i in uniqLen)
-	{
+	for(i in uniqLen) {
 		uniqLenNum <- c(uniqLenNum, sum(nimf==i))
 	}
 	selImfs <- imfs[nimf == uniqLen[which.max(uniqLenNum)]]
 	mnImf <- 0
 	mnTrend <- 0
-	for(i in 1:length(selImfs))
-	{
+	for(i in 1:length(selImfs)) {
 		mnImf <- mnImf+selImfs[[i]]$imf
 		mnTrend <- mnTrend+selImfs[[i]]$trend		
 	}
@@ -211,8 +195,7 @@ iBEEMD <- function(
 	
 	# reserved for points
 	bInputPt <- is(spPolysDf, "SpatialPointsDataFrame")
-	if(bInputPt)
-	{
+	if(bInputPt) {
 		cat("Create polygons from points ...\n")
 		spInputPt <- spPolysDf
 		spPolysDf <- CreateVoronoi(spPolysDf, bDelaunay=FALSE, bClipVor=TRUE, spClipBnd=spClipBnd)
@@ -221,12 +204,9 @@ iBEEMD <- function(
 	spPolysDf@data <- data.frame(id=1:length(spPolysDf), value=spPolysDf@data[,valueField])
 	noiseSD <- sd(spPolysDf@data$value) * wnsd
 	
-	if(!bInputPt)
-	{
+	if(!bInputPt) {
 		spPointsDf <- SPolygonsDfToSPointsDf(spPolysDf)
-	}
-	else
-	{
+	} else {
 		spPointsDf <- spInputPt
 		spPointsDf@data <- spPolysDf@data
 	}
@@ -268,8 +248,7 @@ iBEEMD <- function(
 	}
 	close(pb)
 	
-	if(length(imfs) == 0) 
-	{
+	if(length(imfs) == 0) {
 		warning("no imf decomposed.")
 		return(NULL)
 	}
@@ -282,10 +261,9 @@ iBEEMD <- function(
 	spPolysDfBak@data <- data.frame(original=orgValue, imfDf, trend=mnImfTrend$trend)
 	names(spPolysDfBak@data)[1] <- valueField
 	
-	if(fig)
-	{
+	if(fig) {
 		cat("Plotting ...\n")
-		spplot(spPolysDfBak, col.regions = terrain.colors(256))
+		print(spplot(spPolysDfBak, col.regions = terrain.colors(256)))
 	}
 	
 	return(spPolysDfBak)

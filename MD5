@@ -1,11 +1,11 @@
-5dbc0c101ea3434f5e289fca3de39dfa *DESCRIPTION
+44f9f61d068b4c0dfc1f513c17e7733d *DESCRIPTION
 cfe38e69b31914399a8d1caf6bf64241 *NAMESPACE
 def958560a1c0d6b604ac9909f3c43ee *R/RBFInterp.r
 fa0e65005ceb442468ce4c5e886d5f6c *R/SAHelp.r
-441ab15a992d46443bfaa2e834a95c93 *R/iBEEMD.r
+a9c4f73faea64caf1c069a413c6f3f0d *R/iBEEMD.r
 0cd4ebac8b7c1c4d94fa51262634e94c *demo/00Index
 69d2b16b504149ddb949bee3583d1bd2 *demo/demo.r
 5dc9e99a252af44f392f0a3f1e0eeba8 *inst/extdata/simu.dbf
 44c84804d5098ca1a36df2acbc4c035f *inst/extdata/simu.shp
 9cff9301bd438995e7f222d91ad1710a *inst/extdata/simu.shx
-8f9273e32aae152f6216add5128ed4d1 *man/iBEEMD.Rd
+337b4d8dcbbe30528d6cd63cb28d54ea *man/iBEEMD.Rd
